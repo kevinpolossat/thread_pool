@@ -28,3 +28,10 @@ file(
 )
 
 add_executable(thread_pool ${SOURCE_FILES} ${HEADERS})
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(
+        thread_pool Threads::Threads
+        ${GTKMM_LIBRARIES}
+)
