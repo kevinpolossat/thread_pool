@@ -48,6 +48,9 @@ public:
         });
     }
 
+    ThreadPool(ThreadPool const &)              = delete;
+    ThreadPool operator=(ThreadPool const &)    = delete;
+
     template<typename T, typename... Args>
     auto submit(T && f, Args &&... args) -> std::future<decltype(f(args...))> {
         auto task = std::make_shared<std::packaged_task<decltype(f(args...))()>>(

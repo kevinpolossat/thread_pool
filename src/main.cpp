@@ -4,16 +4,31 @@
 
 #include <iostream>
 #include <future>
+#include <exception>
+
 #include "ThreadPool.hh"
+
+
+static int f() { throw std::runtime_error("future error"); }
+
+static int g(int a, int b) { return a * b; }
 
 int main()
 {
     ThreadPool p(5);
 
-    for (int i = 0; i < 100; ++i) {
-        p.submit([i](){
-            std::cout << i << std::endl;
-        });
+    auto lifeAns    = p.submit([](){
+        return 42;
+    });
+    auto fe         = p.submit(f);
+    auto fm         = p.submit(g, 5, 42);
+
+    std::cout << "life answer: " << lifeAns.get() << std::endl;
+    std::cout << "life answer * 5: " << fm.get() << std::endl;
+    try {
+        fe.get();
+    } catch (std::runtime_error const & re) {
+        std::cout << re.what() << std::endl;
     }
     return 0;
 }
