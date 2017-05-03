@@ -11,6 +11,7 @@
 #include <deque>
 #include <thread>
 #include <algorithm>
+#include <future>
 
 class ThreadPool {
 public:
