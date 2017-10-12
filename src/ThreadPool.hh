@@ -23,8 +23,7 @@ public:
             _workers.emplace_back([this]() {
                 std::function<void()> f;
                 for (;;) {
-                    {
-                        std::unique_lock<std::mutex> u_lock(_mutex);
+                    { std::unique_lock<std::mutex> u_lock(_mutex);
                         _cond_var.wait(u_lock, [this](){ return !_run || !_deque.empty(); });
                         if (!_run && _deque.empty()) {
                             return ;
@@ -39,8 +38,7 @@ public:
     }
 
     ~ThreadPool() {
-        {
-            std::unique_lock<std::mutex> u_lock(_mutex);
+        { std::unique_lock<std::mutex> u_lock(_mutex);
             _run = false;
         }
         _cond_var.notify_all();
@@ -57,8 +55,7 @@ public:
         auto task = std::make_shared<std::packaged_task<decltype(f(args...))()>>(
                 std::bind(std::forward<T>(f), std::forward<Args>(args)...)
         );
-        {
-            std::unique_lock<std::mutex> u_lock(_mutex);
+        { std::unique_lock<std::mutex> u_lock(_mutex);
             _deque.emplace_front([task]() {
                 (*task)();
             });
